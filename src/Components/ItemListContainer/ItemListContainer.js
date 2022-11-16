@@ -63,7 +63,6 @@ export default function ItemListContainer() {
   })
   alert("Tus provisiones han sido cargadas");
   setProvisiones([])
-  
 }
 
 
