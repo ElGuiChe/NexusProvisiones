@@ -2,11 +2,35 @@ import React, { useCallback, useEffect, useState } from "react";
 import { read, utils, writeFileXLSX } from "xlsx";
 import * as XLSX from "xlsx";
 import ItemList from "../ItemList/ItemList";
-//import "./ItemListContainer.css";
+import FireBase from "../FireBase/FireBase"
 
-export default function SheetJSReactHTML() {
+//Acceso a Firestore
+import { getFirestore, doc, setDoc, collection, addDoc } from "firebase/firestore";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDNqImFsEvxFNv7mBIT9jd4n_HuAIVB4R0",
+  authDomain: "provisiones-nexus.firebaseapp.com",
+  projectId: "provisiones-nexus",
+  storageBucket: "provisiones-nexus.appspot.com",
+  messagingSenderId: "217021230567",
+  appId: "1:217021230567:web:bff026f1da90967460e142"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// Sirve para seleccionar la base de datos de FireStore
+const db = getFirestore(app);
+console.log(db)
+//Fin Acceso a Firestore
+
+export default function ItemListContainer() {
   const [provisiones, setProvisiones] = useState([]);
-
+  
   // handle File
   async function handleFile(e) {
     e.preventDefault();
@@ -14,33 +38,43 @@ export default function SheetJSReactHTML() {
     const wb = read(selectedFile); // Analiza el buffer (arrayBuffer es una promesa)
     const ws = wb.Sheets[wb.SheetNames[0]]; // Toma la primera hoja de cálculo
     const data = utils.sheet_to_json(ws); //Genera los objetos en JSON
-    console.log(selectedFile);
-    console.log(wb);
-    console.log(ws);
     console.log(data);
-    setProvisiones(data);
+    setProvisiones(data)
+    ;
   }
 
-  /* submit function
-   const handleSubmit=(e)=>{
-     e.preventDefault();
-     if(excelFile!==null){
-       const workbook = XLSX.read(excelFile,{type:'buffer'});
-       const worksheetName = workbook.SheetNames[0];
-       const worksheet=workbook.Sheets[worksheetName];
-       const data = XLSX.utils.sheet_to_json(worksheet);
-       setExcelData(data);
-       console.log(data);
-     }
-     else{
-       setExcelData(null);
-     }
-   }*/
+  //Crea el objeto para subirlo a la DB
+    async function createProvisiones (provision) { 
+      const docRef = await addDoc(collection(db, "provisiones"), {
+        articulo: provision.Artículo,
+        country: "Japan"
+
+      });
+      console.log("Document written with ID: ", docRef.id);
+   }
+
+   
+  function create2 () {
+    console.log("Si pasa el boton")
+   provisiones.forEach(provision => {
+    console.log(provision)
+    createProvisiones(provision)
+    console.log(provision)
+  })
+  alert("Tus provisiones han sido cargadas");
+  setProvisiones([])
+  
+}
+
+
+   
 
   return (
     <div className="container">
       <div className="form">
-        <form className="form-group" autoComplete="off" onSubmit={""}>
+        <form className="form-group" autoComplete="off" onSubmit={(e)=>{
+          e.preventDefault()
+        }}>
           <label>
             <h5>Selecciona tu plantilla Excel</h5>
           </label>
@@ -57,6 +91,7 @@ export default function SheetJSReactHTML() {
             </div>
           )}
           <button
+            onClick={()=> create2()}
             type="submit"
             className="btn btn-success"
             style={{ marginTop: 5 + "px" }}
