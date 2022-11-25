@@ -1,5 +1,5 @@
-//Configuracion Firestore
-import { getFirestore, doc, setDoc, collection } from "firebase/firestore";
+//Acceso a Firestore
+import { getFirestore, doc, setDoc, collection, addDoc } from "firebase/firestore";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -21,6 +21,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // Sirve para seleccionar la base de datos de FireStore
 const db = getFirestore(app);
-
-return db
+console.log(db)
+//Fin Acceso a Firestore
 }
+
+
+
+
